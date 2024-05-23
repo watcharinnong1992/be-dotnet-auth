@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
 namespace dotnet_auth.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/weather-forecast")]
 public class WeatherForecastController : ControllerBase
 {
     private static readonly string[] Summaries = new[]
@@ -18,7 +20,9 @@ public class WeatherForecastController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet(Name = "GetWeatherForecast")]
+
+    [HttpGet]
+    [Route("any")]
     public IEnumerable<WeatherForecast> Get()
     {
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast
@@ -28,6 +32,30 @@ public class WeatherForecastController : ControllerBase
             Summary = Summaries[Random.Shared.Next(Summaries.Length)]
         })
         .ToArray();
+    }
+
+    [HttpGet]
+    [Route("admin-view")]
+    [Authorize(Roles = "ADMIN.VIEW")]
+    public IActionResult View()
+    {
+        return Ok("admin-view");
+    }
+
+    [HttpGet]
+    [Route("admin-add")]
+    [Authorize(Roles = "ADMIN.ADD")]
+    public IActionResult Add()
+    {
+        return Ok("admin-add");
+    }
+
+    [HttpGet]
+    [Route("admin-add-view")]
+    [Authorize(Roles = "ADMIN.ADD")]
+    public IActionResult AddView()
+    {
+        return Ok("admin-add-veiw");
     }
 }
 
